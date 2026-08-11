@@ -1,0 +1,21 @@
+{
+  "name": "plated",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "api": "npm run dev --workspace @plated/api",
+    "mobile": "npm run start --workspace @plated/mobile",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}

@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+
+# secrets
+.env
+.env.local
+.env.*.local
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+
+# expo
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# native
+apps/mobile/ios/
+apps/mobile/android/
+
+# logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# macOS
+.DS_Store
+
+# editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
