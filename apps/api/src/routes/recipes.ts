@@ -6,10 +6,10 @@ import {
   type RecipeDetailResponse,
   type SuggestResponse,
 } from "@plated/shared";
-import { badRequest, notFound } from "../lib/errors.js";
-import { logCacheAccess } from "../lib/log.js";
-import type { TtlCache } from "../lib/cache.js";
-import type { RecipeSource } from "../sources/types.js";
+import { badRequest, notFound } from "@/lib/errors.js";
+import { logCacheAccess } from "@/lib/log.js";
+import type { TtlCache } from "@/lib/cache.js";
+import type { RecipeSource } from "@/sources/types.js";
 
 export function recipesRouter(source: RecipeSource, cache: TtlCache): Hono {
   const router = new Hono();

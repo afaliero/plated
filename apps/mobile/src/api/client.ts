@@ -42,7 +42,7 @@ async function request(path: string, init?: RequestInit): Promise<unknown> {
         ...init?.headers,
       },
     });
-  } catch (cause) {
+  } catch {
     throw new ApiRequestError(
       "Can't reach the server. Check your connection.",
       "network_error",

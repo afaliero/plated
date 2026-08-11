@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { RootNavigator } from "./src/navigation/RootNavigator";
+import { RootNavigator } from "@/navigation/RootNavigator";
 
 /**
  * App shell. The route table itself lives in src/navigation/RootNavigator.tsx.

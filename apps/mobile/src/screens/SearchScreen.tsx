@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { RecipeSummary } from "@plated/shared";
-import { suggestRecipes } from "../api/client";
-import type { RootStackNavigation } from "../navigation/types";
+import { suggestRecipes } from "@/api/client";
+import type { RootStackNavigation } from "@/navigation/types";
 
 /** Route "Search" — ingredient input and the results list. */
 export function SearchScreen() {

@@ -13,9 +13,13 @@
     "api": "npm run dev --workspace @plated/api",
     "mobile": "npm run start --workspace @plated/mobile",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
-    "typescript": "~6.0.3"
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "^57.0.1",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.67.0"
   }
 }

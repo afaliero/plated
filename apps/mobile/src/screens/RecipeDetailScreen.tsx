@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { RecipeDetail } from "@plated/shared";
-import { getRecipe } from "../api/client";
-import type { RootStackNavigation, RootStackRoute } from "../navigation/types";
+import { getRecipe } from "@/api/client";
+import type { RootStackNavigation, RootStackRoute } from "@/navigation/types";
 
 /**
  * Route "RecipeDetail" — full recipe, including the cooking instructions the

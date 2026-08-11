@@ -1,0 +1,18 @@
+{
+  // Auto-imports and quick-fixes generate "@/lib/errors.js" rather than
+  // "../lib/errors.js". Aliases are defined per workspace in tsconfig.json
+  // ("@/*" -> "./src/*") for both apps/api and apps/mobile.
+  //
+  // This only controls what the editor WRITES. It does not reject a relative
+  // import you type by hand — that needs a lint rule.
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+
+  // Move an aliased file and let the editor fix importers for you.
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  // Use the repo's TypeScript (6.0.3), not whatever the editor ships.
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}

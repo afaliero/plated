@@ -1,4 +1,4 @@
-import type { CacheStatus } from "./cache.js";
+import type { CacheStatus } from "@/lib/cache.js";
 
 /**
  * One line per handled request, on top of hono's `logger()` middleware.

@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { RecipeDetailScreen } from "../screens/RecipeDetailScreen";
-import { SearchScreen } from "../screens/SearchScreen";
-import type { RootStackParamList } from "./types";
+import { RecipeDetailScreen } from "@/screens/RecipeDetailScreen";
+import { SearchScreen } from "@/screens/SearchScreen";
+import type { RootStackParamList } from "@/navigation/types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
