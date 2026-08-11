@@ -13,12 +13,7 @@
 
 type Entry<T> = { value: T; expiresAt: number };
 
-/**
- * How a value was obtained. Callers log this, and the distinction matters:
- * only "miss" spent upstream quota. "coalesced" is a request that joined an
- * in-flight fetch for the same key — free, but for a different reason than a
- * TTL hit, and worth seeing separately when you're tuning the TTL.
- */
+/** How a value was obtained. Callers log this */ 
 export type CacheStatus = "hit" | "coalesced" | "miss";
 
 export type CacheResult<T> = { value: T; status: CacheStatus };
