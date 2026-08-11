@@ -7,6 +7,7 @@ import {
   type SuggestResponse,
 } from "@plated/shared";
 import { badRequest, notFound } from "../lib/errors.js";
+import { logCacheAccess } from "../lib/log.js";
 import type { TtlCache } from "../lib/cache.js";
 import type { RecipeSource } from "../sources/types.js";
 
@@ -41,9 +42,12 @@ export function recipesRouter(source: RecipeSource, cache: TtlCache): Hono {
       throw badRequest("Add at least one ingredient.");
     }
 
-    const recipes = await cache.getOrSet(suggestCacheKey(request), () =>
+    const key = suggestCacheKey(request);
+    const startedAt = Date.now();
+    const { value: recipes, status } = await cache.getOrSet(key, () =>
       source.suggest(request),
     );
+    logCacheAccess("suggest", status, key, startedAt);
 
     return c.json<SuggestResponse>({ recipes });
   });
@@ -58,9 +62,12 @@ export function recipesRouter(source: RecipeSource, cache: TtlCache): Hono {
     const id = c.req.param("id");
     if (!/^[\w-]{1,64}$/.test(id)) throw badRequest("Malformed recipe id.");
 
-    const recipe = await cache.getOrSet(`detail:${id}`, () =>
+    const startedAt = Date.now();
+    const { value: recipe, status } = await cache.getOrSet(`detail:${id}`, () =>
       source.detail(id),
     );
+    logCacheAccess("detail", status, `id=${id}`, startedAt);
+
     if (!recipe) throw notFound(`No recipe with id ${id}.`);
 
     return c.json<RecipeDetailResponse>({ recipe });

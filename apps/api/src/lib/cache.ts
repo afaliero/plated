@@ -13,24 +13,34 @@
 
 type Entry<T> = { value: T; expiresAt: number };
 
+/**
+ * How a value was obtained. Callers log this, and the distinction matters:
+ * only "miss" spent upstream quota. "coalesced" is a request that joined an
+ * in-flight fetch for the same key — free, but for a different reason than a
+ * TTL hit, and worth seeing separately when you're tuning the TTL.
+ */
+export type CacheStatus = "hit" | "coalesced" | "miss";
+
+export type CacheResult<T> = { value: T; status: CacheStatus };
+
 export class TtlCache {
   readonly #store = new Map<string, Entry<unknown>>();
   readonly #inFlight = new Map<string, Promise<unknown>>();
 
   constructor(private readonly ttlSeconds: number) {}
 
-  async getOrSet<T>(key: string, load: () => Promise<T>): Promise<T> {
-    if (this.ttlSeconds === 0) return load();
+  async getOrSet<T>(key: string, load: () => Promise<T>): Promise<CacheResult<T>> {
+    if (this.ttlSeconds === 0) return { value: await load(), status: "miss" };
 
     const hit = this.#store.get(key);
     if (hit && hit.expiresAt > Date.now()) {
-      return hit.value as T;
+      return { value: hit.value as T, status: "hit" };
     }
     if (hit) this.#store.delete(key);
 
     // Someone else is already fetching this exact key — wait on their result.
     const pending = this.#inFlight.get(key);
-    if (pending) return pending as Promise<T>;
+    if (pending) return { value: (await pending) as T, status: "coalesced" };
 
     const promise = load()
       .then((value) => {
@@ -45,7 +55,7 @@ export class TtlCache {
       });
 
     this.#inFlight.set(key, promise);
-    return promise;
+    return { value: await promise, status: "miss" };
   }
 
   /** Drop expired entries. Call periodically so the Map doesn't grow forever. */
