@@ -10,7 +10,10 @@ const MAX_CACHE_TTL_SECONDS = 3600;
 const EnvSchema = z.object({
   SPOONACULAR_API_KEY: z
     .string()
-    .min(1, "SPOONACULAR_API_KEY is required — copy .env.example to apps/api/.env"),
+    .min(
+      1,
+      "SPOONACULAR_API_KEY is required — copy .env.example to apps/api/.env",
+    ),
   PORT: z.coerce.number().int().positive().default(3000),
   CACHE_TTL_SECONDS: z.coerce
     .number()

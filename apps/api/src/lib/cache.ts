@@ -13,7 +13,7 @@
 
 type Entry<T> = { value: T; expiresAt: number };
 
-/** How a value was obtained. Callers log this */ 
+/** How a value was obtained. Callers log this */
 export type CacheStatus = "hit" | "coalesced" | "miss";
 
 export type CacheResult<T> = { value: T; status: CacheStatus };
@@ -24,7 +24,10 @@ export class TtlCache {
 
   constructor(private readonly ttlSeconds: number) {}
 
-  async getOrSet<T>(key: string, load: () => Promise<T>): Promise<CacheResult<T>> {
+  async getOrSet<T>(
+    key: string,
+    load: () => Promise<T>,
+  ): Promise<CacheResult<T>> {
     if (this.ttlSeconds === 0) return { value: await load(), status: "miss" };
 
     const hit = this.#store.get(key);

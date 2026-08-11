@@ -72,7 +72,9 @@ const RecipeInformationSchema = z.object({
 function toIngredientRef(raw: UpstreamIngredient): IngredientRef {
   const amount =
     raw.original ??
-    (raw.amount !== undefined ? `${raw.amount} ${raw.unit ?? ""}`.trim() : null);
+    (raw.amount !== undefined
+      ? `${raw.amount} ${raw.unit ?? ""}`.trim()
+      : null);
 
   return {
     name: raw.name ?? raw.original ?? "unknown",
@@ -145,7 +147,9 @@ export class SpoonacularSource implements RecipeSource {
         });
       } catch (cause) {
         // The SDK throws synchronously on missing required params.
-        reject(upstreamError("Malformed request to the recipe service.", cause));
+        reject(
+          upstreamError("Malformed request to the recipe service.", cause),
+        );
       }
     });
   }

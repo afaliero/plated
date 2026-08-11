@@ -1,5 +1,6 @@
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
+const prettierConfig = require("eslint-config-prettier/flat");
 const tseslint = require("typescript-eslint");
 
 /**
@@ -63,4 +64,8 @@ module.exports = defineConfig([
       "react-hooks/exhaustive-deps": "error",
     },
   },
+
+  // Must stay last: switches off every stylistic rule Prettier already owns,
+  // so format-on-save and `npm run lint` can't disagree.
+  prettierConfig,
 ]);

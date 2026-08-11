@@ -22,9 +22,7 @@ app.use("*", logger());
 // LAN. Lock this down to your real origins before you ship anything public.
 app.use("*", cors());
 
-app.get("/health", (c) =>
-  c.json({ status: "ok", cacheEntries: cache.size }),
-);
+app.get("/health", (c) => c.json({ status: "ok", cacheEntries: cache.size }));
 
 app.route("/recipes", recipesRouter(source, cache));
 

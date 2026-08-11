@@ -38,11 +38,11 @@ Other scripts: `npm run typecheck` (all workspaces).
 
 ## API
 
-| Method | Path              | Notes                                       |
-| ------ | ----------------- | ------------------------------------------- |
-| `GET`  | `/health`         | Liveness + cache size                       |
-| `POST` | `/recipes/suggest`| Ingredients in, recipe cards out. 1 upstream call. |
-| `GET`  | `/recipes/:id`    | Full recipe for the detail screen. 1 upstream call. |
+| Method | Path               | Notes                                               |
+| ------ | ------------------ | --------------------------------------------------- |
+| `GET`  | `/health`          | Liveness + cache size                               |
+| `POST` | `/recipes/suggest` | Ingredients in, recipe cards out. 1 upstream call.  |
+| `GET`  | `/recipes/:id`     | Full recipe for the detail screen. 1 upstream call. |
 
 ```bash
 curl -X POST http://localhost:3000/recipes/suggest \

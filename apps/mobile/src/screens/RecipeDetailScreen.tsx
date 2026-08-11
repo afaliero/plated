@@ -25,29 +25,43 @@ export function RecipeDetailScreen() {
   const navigation = useNavigation<RootStackNavigation>();
   const { id } = params;
 
-  const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  /**
+   * One state object tagged with the id it belongs to.
+   *
+   * Tagging is what lets us derive "loading" during render instead of calling
+   * setLoading(true) in the effect body — a synchronous setState in an effect
+   * triggers a cascading render, which react-hooks/set-state-in-effect flags.
+   * When `id` changes, `loaded.id` no longer matches and we're loading again,
+   * with no extra render.
+   */
+  const [loaded, setLoaded] = useState<{
+    id: string;
+    recipe: RecipeDetail | null;
+    error: string | null;
+  } | null>(null);
+
+  const settled = loaded?.id === id ? loaded : null;
+  const loading = settled === null;
+  const recipe = settled?.recipe ?? null;
+  const error = settled?.error ?? null;
 
   useEffect(() => {
     // Guards against a stale response overwriting a newer one if the id
     // changes while a request is still in flight.
     let active = true;
 
-    setLoading(true);
-    setError(null);
-
     getRecipe(id)
       .then((result) => {
-        if (active) setRecipe(result);
+        if (active) setLoaded({ id, recipe: result, error: null });
       })
       .catch((e: unknown) => {
         if (active) {
-          setError(e instanceof Error ? e.message : "Something went wrong.");
+          setLoaded({
+            id,
+            recipe: null,
+            error: e instanceof Error ? e.message : "Something went wrong.",
+          });
         }
-      })
-      .finally(() => {
-        if (active) setLoading(false);
       });
 
     return () => {
@@ -110,7 +124,7 @@ export function RecipeDetailScreen() {
         ))
       ) : (
         <Text style={styles.listItem}>
-          This source didn't provide steps.
+          {"This source didn't provide steps."}
           {recipe.sourceUrl ? " Check the original recipe." : ""}
         </Text>
       )}
