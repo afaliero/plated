@@ -2,17 +2,14 @@
   "name": "plated",
   "private": true,
   "version": "0.0.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "packageManager": "pnpm@11.21.0",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "api": "npm run dev --workspace @plated/api",
-    "mobile": "npm run start --workspace @plated/mobile",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "api": "pnpm --filter @plated/api dev",
+    "mobile": "pnpm --filter @plated/mobile start",
+    "typecheck": "pnpm -r run typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

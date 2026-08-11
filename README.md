@@ -13,8 +13,11 @@ plated/
 
 ## Setup
 
+This repo uses **pnpm** (pinned via `packageManager`; `corepack enable pnpm`
+gets you the right version).
+
 ```bash
-npm install
+pnpm install
 cp .env.example apps/api/.env   # then paste your Spoonacular key
 ```
 
@@ -23,8 +26,8 @@ Get a key at <https://spoonacular.com/food-api/console#Dashboard>.
 ## Run
 
 ```bash
-npm run api      # http://localhost:3000
-npm run mobile   # Expo dev server
+pnpm api      # http://localhost:3000
+pnpm mobile   # Expo dev server
 ```
 
 On a **physical device**, `localhost` resolves to the phone, not your Mac.
@@ -34,7 +37,7 @@ Create `apps/mobile/.env` with your LAN address:
 EXPO_PUBLIC_API_URL=http://192.168.1.42:3000
 ```
 
-Other scripts: `npm run typecheck` (all workspaces).
+Other scripts: `pnpm typecheck` (all workspaces), `pnpm lint`, `pnpm format`.
 
 ## API
 
