@@ -11,8 +11,8 @@ import {
   notFound,
   quotaExceeded,
   upstreamError,
-} from "@/lib/errors.js";
-import type { RecipeSource } from "@/sources/types.js";
+} from "src/lib/errors.js";
+import type { RecipeSource } from "src/sources/types.js";
 
 /** Spoonacular returns ingredient `image` as a bare filename, not a URL. */
 const INGREDIENT_IMAGE_BASE = "https://img.spoonacular.com/ingredients_100x100";

@@ -2,7 +2,6 @@ import {
   ApiErrorSchema,
   RecipeDetailResponseSchema,
   SuggestResponseSchema,
-  normalizeIngredients,
   type RecipeDetail,
   type RecipeSummary,
   type SuggestRequestInput,
@@ -64,15 +63,12 @@ async function request(path: string, init?: RequestInit): Promise<unknown> {
   return body;
 }
 
-/** Ingredients in, recipe cards out. */
 export async function suggestRecipes(
   input: SuggestRequestInput,
 ): Promise<RecipeSummary[]> {
-  // Normalize client-side too: identical queries then hit the same server-side
-  // cache entry instead of each burning upstream quota.
   const body = {
     ...input,
-    ingredients: normalizeIngredients(input.ingredients),
+    ingredients: input.ingredients,
   };
 
   const raw = await request("/recipes/suggest", {
@@ -83,7 +79,6 @@ export async function suggestRecipes(
   return SuggestResponseSchema.parse(raw).recipes;
 }
 
-/** Full recipe for the detail screen. Costs a second upstream call. */
 export async function getRecipe(id: string): Promise<RecipeDetail> {
   const raw = await request(`/recipes/${encodeURIComponent(id)}`);
   return RecipeDetailResponseSchema.parse(raw).recipe;

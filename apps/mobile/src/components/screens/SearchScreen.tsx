@@ -10,13 +10,17 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { RecipeSummary } from "@plated/shared";
-import { suggestRecipes } from "@/api/client";
-import type { RootStackNavigation } from "@/navigation/types";
+import { suggestRecipes } from "src/api/client";
+import { Screen } from "src/components/core/Screen";
+import type { RootStackNavigation } from "src/navigation/types";
+import { color, fontSize, fontWeight, radius, space } from "src/theme";
 
 /** Route "Search" — ingredient input and the results list. */
 export function SearchScreen() {
   const navigation = useNavigation<RootStackNavigation>();
+  const insets = useSafeAreaInsets();
 
   const [input, setInput] = useState("chicken, rice, broccoli");
   const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
@@ -37,7 +41,7 @@ export function SearchScreen() {
   }
 
   return (
-    <View style={styles.screen}>
+    <Screen style={styles.screen}>
       <TextInput
         style={styles.input}
         value={input}
@@ -58,7 +62,10 @@ export function SearchScreen() {
       <FlatList
         data={recipes}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[
+          styles.list,
+          { paddingBottom: insets.bottom + space.lg },
+        ]}
         renderItem={({ item }) => (
           <Pressable
             style={styles.card}
@@ -86,36 +93,47 @@ export function SearchScreen() {
           </Pressable>
         )}
       />
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#fff", paddingHorizontal: 16 },
+  screen: {
+    paddingHorizontal: space.lg,
+  },
   input: {
     borderWidth: 1,
-    borderColor: "#d8d8d8",
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
-    marginTop: 16,
+    borderColor: color.border,
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
+    paddingVertical: space.md,
+    fontSize: fontSize.lg,
+    color: color.text,
+    marginTop: space.lg,
   },
   button: {
-    backgroundColor: "#1f7a3d",
-    borderRadius: 10,
+    backgroundColor: color.brand,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: "center",
-    marginTop: 12,
+    marginTop: space.md,
   },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  error: { color: "#b00020", marginTop: 12 },
-  spinner: { marginTop: 16 },
-  list: { paddingVertical: 16, gap: 12 },
-  card: { flexDirection: "row", gap: 12, alignItems: "center" },
-  thumb: { width: 88, height: 66, borderRadius: 8 },
-  thumbEmpty: { backgroundColor: "#eee" },
-  cardBody: { flex: 1, gap: 4 },
-  cardTitle: { fontSize: 16, fontWeight: "600" },
-  cardMeta: { fontSize: 13, color: "#666" },
+  buttonText: {
+    color: color.onBrand,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+  },
+  error: { color: color.danger, marginTop: space.md },
+  spinner: { marginTop: space.lg },
+  list: { paddingVertical: space.lg, gap: space.md },
+  card: { flexDirection: "row", gap: space.md, alignItems: "center" },
+  thumb: { width: 88, height: 66, borderRadius: radius.sm },
+  thumbEmpty: { backgroundColor: color.surface },
+  cardBody: { flex: 1, gap: space.xs },
+  cardTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold,
+    color: color.text,
+  },
+  cardMeta: { fontSize: fontSize.xs, color: color.textMuted },
 });

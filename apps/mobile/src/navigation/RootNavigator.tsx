@@ -1,28 +1,24 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { RecipeDetailScreen } from "@/screens/RecipeDetailScreen";
-import { SearchScreen } from "@/screens/SearchScreen";
-import type { RootStackParamList } from "@/navigation/types";
+import { FridgeScreen } from "src/components/screens/FridgeScreen";
+import { RecipeDetailScreen } from "src/components/screens/RecipeDetailScreen";
+import { SearchScreen } from "src/components/screens/SearchScreen";
+import type { RootStackParamList } from "src/navigation/types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-/**
- * The route table.
- *
- * Each `Screen` binds a route name to the component that renders it. To add a
- * screen: add its name and params to `RootStackParamList`, then register it
- * here — navigate to it with `navigation.navigate("<name>", params)`.
- */
 export function RootNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Search"
+      initialRouteName="Fridge"
       screenOptions={{
-        headerStyle: { backgroundColor: "#fff" },
-        headerTitleStyle: { fontWeight: "700" },
-        headerTintColor: "#1f7a3d",
-        contentStyle: { backgroundColor: "#fff" },
+        headerShown: false,
       }}
     >
+      <Stack.Screen
+        name="Fridge"
+        component={FridgeScreen}
+        // options={{ title: "My fridge" }}
+      />
       <Stack.Screen
         name="Search"
         component={SearchScreen}

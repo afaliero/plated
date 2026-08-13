@@ -5,7 +5,7 @@
     "lib": ["ES2022"],
     "types": ["node"],
     "paths": {
-      "@/*": ["./src/*"]
+      "src/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts", "types/**/*.d.ts"]

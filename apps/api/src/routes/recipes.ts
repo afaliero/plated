@@ -1,24 +1,18 @@
 import { Hono } from "hono";
 import {
   SuggestRequestSchema,
-  suggestCacheKey,
-  normalizeIngredients,
   type RecipeDetailResponse,
   type SuggestResponse,
 } from "@plated/shared";
-import { badRequest, notFound } from "@/lib/errors.js";
-import { logCacheAccess } from "@/lib/log.js";
-import type { TtlCache } from "@/lib/cache.js";
-import type { RecipeSource } from "@/sources/types.js";
+import { badRequest, notFound } from "src/lib/errors.js";
+import { logCacheAccess, cacheKey } from "src/storage/util.js";
+import type { TtlCache } from "src/storage/cache.js";
+import type { RecipeSource } from "src/sources/types.js";
+import { normalizeIngredients } from "src/routes/util.js";
 
 export function recipesRouter(source: RecipeSource, cache: TtlCache): Hono {
   const router = new Hono();
 
-  /**
-   * POST /recipes/suggest
-   * Ingredients in, recipe cards out. POST rather than GET because the
-   * ingredient list can be long and we want it in a body, not a URL.
-   */
   router.post("/suggest", async (c) => {
     const body = await c.req.json().catch(() => {
       throw badRequest("Request body must be valid JSON.");
@@ -32,18 +26,18 @@ export function recipesRouter(source: RecipeSource, cache: TtlCache): Hono {
       throw badRequest(detail);
     }
 
-    // Normalize before both the cache key and the upstream call so that
-    // ["Rice","chicken "] and ["chicken","rice"] are one cache entry.
-    const request = {
-      ...parsed.data,
-      ingredients: normalizeIngredients(parsed.data.ingredients),
-    };
-    if (request.ingredients.length === 0) {
+    const ingredients = normalizeIngredients(parsed.data.ingredients);
+
+    if (ingredients.length === 0) {
       throw badRequest("Add at least one ingredient.");
     }
+    const request = {
+      ...parsed.data,
+      ingredients,
+    };
 
-    const key = suggestCacheKey(request);
     const startedAt = Date.now();
+    const key = cacheKey(ingredients);
     const { value: recipes, status } = await cache.getOrSet(key, () =>
       source.suggest(request),
     );
@@ -52,12 +46,6 @@ export function recipesRouter(source: RecipeSource, cache: TtlCache): Hono {
     return c.json<SuggestResponse>({ recipes });
   });
 
-  /**
-   * GET /recipes/:id
-   * Full detail for one recipe. This is a SECOND upstream call — the suggest
-   * endpoint deliberately returns no instructions, so only pay for this when
-   * the user actually taps into a recipe.
-   */
   router.get("/:id", async (c) => {
     const id = c.req.param("id");
     if (!/^[\w-]{1,64}$/.test(id)) throw badRequest("Malformed recipe id.");

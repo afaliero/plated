@@ -4,7 +4,7 @@ const prettierConfig = require("eslint-config-prettier/flat");
 const tseslint = require("typescript-eslint");
 
 /**
- * Parent-relative imports are banned in favour of the "@/" alias defined in
+ * Parent-relative imports are banned in favour of the "src/" alias defined in
  * each workspace's tsconfig paths. Same-directory "./foo" stays legal — it's
  * unambiguous, and packages/shared depends on it (see its index.ts: that
  * package ships raw TS consumed by both Metro and tsx, so its internal
@@ -18,7 +18,7 @@ const noParentRelativeImports = {
         {
           group: ["../*", "../**"],
           message:
-            'Use the "@/" alias instead of a parent-relative import (see "paths" in tsconfig.json).',
+            'Use the "src/" alias instead of a parent-relative import (see "paths" in tsconfig.json).',
         },
       ],
     },
@@ -32,7 +32,6 @@ module.exports = defineConfig([
       "**/.expo/**",
       "**/dist/**",
       "**/build/**",
-      "apps/mobile/assets/**",
       "apps/api/types/**",
     ],
   },
@@ -51,7 +50,7 @@ module.exports = defineConfig([
     files: ["apps/mobile/**/*.{ts,tsx}"],
     extends: [expoConfig],
     settings: {
-      // Teaches import/no-unresolved about the "@/*" alias, so it validates
+      // Teaches import/no-unresolved about the "src/*" alias, so it validates
       // aliased paths instead of reporting every one as missing.
       "import/resolver": {
         typescript: { project: "apps/mobile/tsconfig.json" },

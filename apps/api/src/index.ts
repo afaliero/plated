@@ -3,11 +3,11 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import type { ApiError } from "@plated/shared";
-import { env } from "@/env.js";
-import { TtlCache } from "@/lib/cache.js";
-import { AppError } from "@/lib/errors.js";
-import { recipesRouter } from "@/routes/recipes.js";
-import { SpoonacularSource } from "@/sources/spoonacular.js";
+import { env } from "src/env.js";
+import { TtlCache } from "src/storage/cache.js";
+import { AppError } from "src/lib/errors.js";
+import { recipesRouter } from "src/routes/recipes.js";
+import { SpoonacularSource } from "src/sources/spoonacular.js";
 
 const cache = new TtlCache(env.CACHE_TTL_SECONDS);
 const source = new SpoonacularSource(env.SPOONACULAR_API_KEY);
@@ -42,7 +42,6 @@ app.onError((err, c) => {
     );
   }
 
-  // Never leak an unexpected error's message to the client.
   console.error("Unhandled error:", err);
   return c.json<ApiError>(
     { error: { code: "internal_error", message: "Something went wrong." } },
