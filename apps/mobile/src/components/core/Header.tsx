@@ -16,12 +16,12 @@ export function Header() {
   );
 }
 
-Header.displayName = "Header";
-
 const styles = StyleSheet.create({
   bar: {
     paddingTop: space.sm,
     paddingBottom: space.md,
   },
-  logo: { height: 40, aspectRatio: 3},
+  logo: { height: 40, aspectRatio: 3 },
 });
+
+Header.displayName = "Header";

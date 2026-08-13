@@ -9,9 +9,6 @@ type ScreenProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-// "bottom" is excluded by default: scrollable content should pad past the home
-// indicator rather than be clipped short of it. Screens with a ScrollView or
-// FlatList add insets.bottom to contentContainerStyle instead.
 const DEFAULT_EDGES = ["top", "left", "right"] as const;
 
 export function Screen({

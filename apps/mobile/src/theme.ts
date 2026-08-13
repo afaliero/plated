@@ -15,6 +15,8 @@ export const color = {
   text: "#1A1A1A",
   textBody: "#333333",
   textMuted: "#666666",
+  /** Placeholder copy and inert input icons — lighter than textMuted. */
+  textPlaceholder: "#8A8A8A",
 
   /**
    * Deliberately brighter and warmer than `brand`. The previous #B00020 sat
