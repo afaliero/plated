@@ -3,7 +3,7 @@ import { z } from "zod";
 /**
  * These schemas define OUR API contract — deliberately not Spoonacular's shape.
  * Keeping them vendor-neutral means swapping or supplementing the recipe source
- * later is a change inside apps/api only, not a change to the mobile app.
+ * later is a change inside apps/backend only, not a change to the frontend app.
  *
  * `id` is a string even though Spoonacular ids are numeric, so a future source
  * with slug or uuid ids doesn't force a breaking change.

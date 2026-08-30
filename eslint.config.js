@@ -32,13 +32,13 @@ module.exports = defineConfig([
       "**/.expo/**",
       "**/dist/**",
       "**/build/**",
-      "apps/api/types/**",
+      "apps/backend/types/**",
     ],
   },
 
   // Backend and shared schemas: plain TypeScript, no React.
   {
-    files: ["apps/api/**/*.ts", "packages/shared/**/*.ts"],
+    files: ["apps/backend/**/*.ts", "packages/shared/**/*.ts"],
     extends: [tseslint.configs.recommended],
     rules: {
       ...noParentRelativeImports,
@@ -47,13 +47,13 @@ module.exports = defineConfig([
 
   // Mobile: Expo's config brings the React Native, React and hooks plugins.
   {
-    files: ["apps/mobile/**/*.{ts,tsx}"],
+    files: ["apps/frontend/**/*.{ts,tsx}"],
     extends: [expoConfig],
     settings: {
       // Teaches import/no-unresolved about the "src/*" alias, so it validates
       // aliased paths instead of reporting every one as missing.
       "import/resolver": {
-        typescript: { project: "apps/mobile/tsconfig.json" },
+        typescript: { project: "apps/frontend/tsconfig.json" },
       },
     },
     rules: {

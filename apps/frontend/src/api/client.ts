@@ -12,7 +12,7 @@ import {
  *
  * localhost works in the iOS simulator. On a PHYSICAL device it will not —
  * the phone resolves localhost to itself. Set your machine's LAN address in
- * apps/mobile/.env:
+ * apps/frontend/.env:
  *   EXPO_PUBLIC_API_URL=http://192.168.1.42:3000
  *
  * Never put the Spoonacular key here. Anything EXPO_PUBLIC_ ships inside the

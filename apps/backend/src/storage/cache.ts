@@ -1,7 +1,7 @@
 /**
  * In-memory TTL cache with single-flight de-duplication.
  *
- * Every upstream call costs Spoonacular quota, so two things matter here:
+ * For expensive loaders, two things matter here:
  *   1. TTL reuse  — repeat searches within the window are free.
  *   2. Single-flight — N concurrent misses for the same key make ONE upstream
  *      call, not N. Without this, a burst of identical requests burns quota

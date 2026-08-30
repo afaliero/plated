@@ -1,5 +1,5 @@
 {
-  "name": "@plated/mobile",
+  "name": "@plated/frontend",
   "version": "0.0.0",
   "private": true,
   "main": "index.ts",

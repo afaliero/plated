@@ -1,5 +1,5 @@
 {
-  "name": "@plated/api",
+  "name": "@plated/backend",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -12,6 +12,8 @@
     "@hono/node-server": "^1.13.7",
     "@plated/shared": "workspace:*",
     "hono": "^4.6.14",
+    "knex": "^3.3.0",
+    "mysql2": "^3.24.2",
     "spoonacular": "^2.0.2",
     "zod": "^4.0.0"
   },

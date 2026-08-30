@@ -7,8 +7,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "api": "pnpm --filter @plated/api dev",
-    "mobile": "pnpm --filter @plated/mobile start",
+    "backend": "pnpm --filter @plated/backend dev",
+    "frontend": "pnpm --filter @plated/frontend start",
     "typecheck": "pnpm -r run typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
