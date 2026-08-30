@@ -12,7 +12,7 @@ import { SpoonacularClient } from "src/services/recipe/client/spoonacular/spoona
 import { spoonacularConfig } from "src/services/recipe/client/spoonacular/config.js";
 import { RecipeService } from "src/services/recipe/recipe-service.js";
 import { recipeCache } from "src/services/recipe/storage/cache.js";
-import { initializeDatabase } from "src/storage/db/db.js";
+import { initializeDatabase } from "src/storage/db/knex.js";
 
 const spoonacularClient = new SpoonacularClient(spoonacularConfig);
 const recipeClient = new RecipeClient(spoonacularClient);

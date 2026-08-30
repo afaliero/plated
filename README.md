@@ -17,7 +17,11 @@ plated/
 │   │       │       └── spoonacular/      Vendor client + configuration
 │   │       └── storage/
 │   │           ├── cache.ts             Shared cache primitive
-│   │           └── db/                  MySQL connection, schemas + seeds
+│   │           ├── knexfile.ts          Knex/MySQL configuration
+│   │           └── db/
+│   │               ├── knex.ts          Shared DB + startup initialization
+│   │               ├── migrations/      Numbered table migrations
+│   │               └── seeds/           Numbered table seeds
 │   └── frontend/                        Expo + React Native app
 └── packages/
     └── shared/      zod schemas + types used by both sides
