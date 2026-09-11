@@ -6,7 +6,6 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -14,12 +13,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { RecipeSummary } from "@plated/shared";
 import { suggestRecipes } from "src/api/client";
 import { Screen } from "src/components/core/Screen";
-import type { RootStackNavigation } from "src/navigation/types";
+import { SearchBar } from "src/components/core/SearchBar";
+import type { RecipesStackNavigation } from "src/navigation/types";
 import { color, fontSize, fontWeight, radius, space } from "src/theme";
 
 /** Route "Search" — ingredient input and the results list. */
 export function SearchScreen() {
-  const navigation = useNavigation<RootStackNavigation>();
+  const navigation = useNavigation<RecipesStackNavigation>();
   const insets = useSafeAreaInsets();
 
   const [input, setInput] = useState("chicken, rice, broccoli");
@@ -42,12 +42,11 @@ export function SearchScreen() {
 
   return (
     <Screen style={styles.screen}>
-      <TextInput
-        style={styles.input}
+      <SearchBar
+        style={styles.search}
         value={input}
         onChangeText={setInput}
         placeholder="chicken, rice, broccoli"
-        autoCapitalize="none"
       />
 
       <Pressable style={styles.button} onPress={search} disabled={loading}>
@@ -69,8 +68,6 @@ export function SearchScreen() {
         renderItem={({ item }) => (
           <Pressable
             style={styles.card}
-            // Route name + params. Both are checked against
-            // RootStackParamList, so a typo or a missing id won't compile.
             onPress={() => navigation.navigate("RecipeDetail", { id: item.id })}
           >
             {item.imageUrl ? (
@@ -101,14 +98,7 @@ const styles = StyleSheet.create({
   screen: {
     paddingHorizontal: space.lg,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: radius.md,
-    paddingHorizontal: space.md,
-    paddingVertical: space.md,
-    fontSize: fontSize.lg,
-    color: color.text,
+  search: {
     marginTop: space.lg,
   },
   button: {

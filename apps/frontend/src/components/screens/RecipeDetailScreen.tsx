@@ -12,32 +12,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { RecipeDetail } from "@plated/shared";
 import { getRecipe } from "src/api/client";
 import { Screen } from "src/components/core/Screen";
-import type { RootStackNavigation, RootStackRoute } from "src/navigation/types";
+import type {
+  RecipesStackNavigation,
+  RecipesStackRoute,
+} from "src/navigation/types";
 import { color, fontSize, fontWeight, radius, space } from "src/theme";
 
-/**
- * Route "RecipeDetail" — full recipe, including the cooking instructions the
- * search results deliberately don't carry.
- *
- * This is the SECOND upstream call: findByIngredients returns no steps, cook
- * time or servings, so we only pay for it when someone actually taps in.
- */
 export function RecipeDetailScreen() {
-  // `id` is typed from RootStackParamList — no cast, no `any`.
-  const { params } = useRoute<RootStackRoute<"RecipeDetail">>();
-  const navigation = useNavigation<RootStackNavigation>();
+  const { params } = useRoute<RecipesStackRoute<"RecipeDetail">>();
+  const navigation = useNavigation<RecipesStackNavigation>();
   const insets = useSafeAreaInsets();
   const { id } = params;
 
-  /**
-   * One state object tagged with the id it belongs to.
-   *
-   * Tagging is what lets us derive "loading" during render instead of calling
-   * setLoading(true) in the effect body — a synchronous setState in an effect
-   * triggers a cascading render, which react-hooks/set-state-in-effect flags.
-   * When `id` changes, `loaded.id` no longer matches and we're loading again,
-   * with no extra render.
-   */
   const [loaded, setLoaded] = useState<{
     id: string;
     recipe: RecipeDetail | null;
@@ -80,7 +66,7 @@ export function RecipeDetailScreen() {
 
   if (loading) {
     return (
-      <Screen edges={["top", "left", "right", "bottom"]}>
+      <Screen edges={["left", "right"]}>
         <View style={styles.centered}>
           <ActivityIndicator />
         </View>
@@ -90,7 +76,7 @@ export function RecipeDetailScreen() {
 
   if (error || !recipe) {
     return (
-      <Screen edges={["top", "left", "right", "bottom"]}>
+      <Screen edges={["left", "right"]}>
         <View style={styles.centered}>
           <Text style={styles.error}>{error ?? "Recipe not found."}</Text>
         </View>
@@ -105,7 +91,7 @@ export function RecipeDetailScreen() {
   ].filter(Boolean);
 
   return (
-    <Screen>
+    <Screen edges={["left", "right"]}>
       <ScrollView
         contentContainerStyle={[
           styles.content,

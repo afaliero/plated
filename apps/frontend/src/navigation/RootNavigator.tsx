@@ -1,36 +1,60 @@
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { FridgeScreen } from "src/components/screens/FridgeScreen";
 import { RecipeDetailScreen } from "src/components/screens/RecipeDetailScreen";
 import { SearchScreen } from "src/components/screens/SearchScreen";
-import type { RootStackParamList } from "src/navigation/types";
+import type {
+  RecipesStackParamList,
+  RootTabParamList,
+} from "src/navigation/types";
+import { color, fontSize, fontWeight } from "src/theme";
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<RootTabParamList>();
+const Stack = createNativeStackNavigator<RecipesStackParamList>();
 
-export function RootNavigator() {
+function RecipesNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Fridge"
+      initialRouteName="Search"
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Stack.Screen
-        name="Fridge"
-        component={FridgeScreen}
-        // options={{ title: "My fridge" }}
-      />
-      <Stack.Screen
-        name="Search"
-        component={SearchScreen}
-        options={{ title: "What can I make?" }}
-      />
+      <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen
         name="RecipeDetail"
         component={RecipeDetailScreen}
-        // Placeholder — the screen calls setOptions with the real recipe
-        // title once it has loaded.
-        options={{ title: "Recipe" }}
+        options={{
+          headerShown: true,
+          title: "Recipe",
+          headerTintColor: color.brand,
+        }}
       />
     </Stack.Navigator>
+  );
+}
+
+export function RootNavigator() {
+  return (
+    <Tab.Navigator
+      initialRouteName="Fridge"
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: color.brand,
+        tabBarInactiveTintColor: color.textMuted,
+        tabBarStyle: {
+          backgroundColor: color.bg,
+          borderTopColor: color.border,
+        },
+        tabBarIconStyle: { display: "none" },
+        tabBarLabelStyle: {
+          fontSize: fontSize.sm,
+          fontWeight: fontWeight.semibold,
+        },
+      }}
+    >
+      <Tab.Screen name="Fridge" component={FridgeScreen} />
+      <Tab.Screen name="Recipes" component={RecipesNavigator} />
+    </Tab.Navigator>
   );
 }

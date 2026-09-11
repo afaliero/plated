@@ -34,6 +34,20 @@ Backend recipe flow:
 route -> orchestrator -> RecipeService -> RecipeClient -> SpoonacularClient
 ```
 
+Frontend navigation:
+
+```text
+RootNavigator (bottom tabs)
+├── Fridge  -> FridgeScreen
+└── Recipes -> native stack
+               ├── Search -> SearchScreen
+               └── RecipeDetail -> RecipeDetailScreen
+```
+
+The tab bar remains visible on recipe details, with a back button returning to
+the recipe list. Fridge inventory is currently local screen state; recipe search
+still uses manually entered ingredients.
+
 ## Setup
 
 This repo uses **pnpm** (pinned via `packageManager`; `corepack enable pnpm`
