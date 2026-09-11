@@ -9,24 +9,32 @@ plated/
 │   ├── backend/
 │   │   └── src/
 │   │       ├── routes/                  HTTP routes + orchestrator
+│   │       ├── services/ai/
+│   │       │   ├── openai-client.ts     Responses API transport
+│   │       │   ├── model-policy.ts      Explicit task-to-model policy
+│   │       │   └── types.ts              AI client contracts
 │   │       ├── services/fridge/
 │   │       │   ├── fridge-service.ts     Inventory operations
 │   │       │   ├── types.ts              Service + repository contracts
 │   │       │   └── storage/              MySQL fridge repository
 │   │       ├── services/recipe/
 │   │       │   ├── recipe-service.ts     Recipe logic + internal conversion
+│   │       │   ├── preference-ranker.ts  Recipe preference ranking task
 │   │       │   ├── types.ts              Service contract
 │   │       │   ├── storage/              Recipe-owned cache instances
 │   │       │   └── client/
 │   │       │       ├── recipe-client.ts  Vendor-neutral client
 │   │       │       └── spoonacular/      Vendor client + configuration
-│   │       └── storage/
+│   │       ├── storage/
 │   │           ├── cache.ts             Shared cache primitive
 │   │           ├── knexfile.ts          Knex/MySQL configuration
 │   │           └── db/
 │   │               ├── knex.ts          Shared DB + startup initialization
 │   │               ├── migrations/      Numbered table migrations
 │   │               └── seeds/           Numbered table seeds
+│   │       └── evals/recipe-preferences/
+│   │           ├── metrics.ts           Deterministic ranking metrics
+│   │           └── metrics.test.ts      Offline eval tests
 │   └── frontend/                        Expo + React Native app
 └── packages/
     └── shared/      zod schemas + types used by both sides
@@ -46,6 +54,11 @@ POST /fridge/recipes
   -> PreferenceRanker (gpt-5.6-luna only)
   -> validated candidate IDs -> trusted recipe cards
 ```
+
+OpenAI transport lives under `apps/backend/src/services/ai/`. It owns the
+Responses API client and the explicit task-to-model policy. Domain services own
+their prompts and output validation; recipe preference eval metrics live under
+`apps/backend/src/evals/recipe-preferences/`.
 
 Fridge inventory flow:
 

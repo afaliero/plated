@@ -15,6 +15,7 @@ import { SpoonacularClient } from "src/services/recipe/client/spoonacular/spoona
 import { spoonacularConfig } from "src/services/recipe/client/spoonacular/config.js";
 import { RecipeService } from "src/services/recipe/recipe-service.js";
 import { PreferenceRanker } from "src/services/recipe/preference-ranker.js";
+import { OpenAiClient } from "src/services/ai/openai-client.js";
 import { recipeCache } from "src/services/recipe/storage/cache.js";
 import db, { initializeDatabase } from "src/storage/db/knex.js";
 
@@ -25,7 +26,7 @@ const fridgeService = new FridgeService(new FridgeRepository(db));
 const orchestrator = new Orchestrator(
   recipeService,
   fridgeService,
-  new PreferenceRanker(env.OPENAI_API_KEY),
+  new PreferenceRanker(new OpenAiClient(env.OPENAI_API_KEY)),
 );
 
 await initializeDatabase();
