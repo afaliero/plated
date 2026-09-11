@@ -4,6 +4,7 @@ Given a list of ingredients, show recipes you can make with them.
 
 ```
 plated/
+├── compose.yaml                        Local MySQL + persistent data volume
 ├── apps/
 │   ├── backend/
 │   │   └── src/
@@ -45,9 +46,22 @@ cp .env.example apps/backend/.env   # then paste your Spoonacular key
 
 Get a key at <https://spoonacular.com/food-api/console#Dashboard>.
 
-Create the MySQL database and credentials matching `.env` before starting the
-backend. On startup, the backend creates the `users`, `ingredients`, and
-`fridges` tables when absent and inserts seed rows into empty tables.
+Install and open Docker Desktop. Set `MYSQL_PASSWORD` and `MYSQL_ROOT_PASSWORD`
+in `apps/backend/.env` to local development passwords. MySQL runs in Docker,
+available to the backend at `127.0.0.1:3307`; its data lives in a named volume.
+Docker creates the configured database and user on the first initialization.
+Changing these environment settings later does not update an existing database's
+credentials.
+
+`pnpm backend` starts MySQL, waits for its health check, and starts the backend
+locally. Every backend startup applies pending migrations and then reseeds the
+`users`, `ingredients`, and `fridges` tables, deleting their previous contents.
+This reseeding is intentional for local development; revisit it before moving
+to a hosted database.
+
+```text
+pnpm backend -> Docker MySQL ready -> backend migrations -> seeds -> HTTP server
+```
 
 ## Run
 
@@ -55,6 +69,20 @@ backend. On startup, the backend creates the `users`, `ingredients`, and
 pnpm backend   # http://localhost:3000
 pnpm frontend  # Expo dev server
 ```
+
+Keep Docker Desktop running. If a newly installed `docker` command is not found,
+open a new terminal tab so your shell picks up Docker's PATH configuration.
+Stop the backend with Ctrl+C before running `pnpm backend` again; its development
+watcher also restarts the backend and reseeds after source edits.
+
+```bash
+docker compose --env-file apps/backend/.env ps
+docker compose --env-file apps/backend/.env logs -f db
+docker compose --env-file apps/backend/.env stop db
+```
+
+Stopping the container preserves the volume, but backend startup still reseeds
+the application tables.
 
 On a **physical device**, `localhost` resolves to the phone, not your Mac.
 Create `apps/frontend/.env` with your LAN address:

@@ -7,7 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "backend": "pnpm --filter @plated/backend dev",
+    "backend": "docker compose --env-file apps/backend/.env up -d --wait db && pnpm --filter @plated/backend dev",
     "frontend": "pnpm --filter @plated/frontend start",
     "typecheck": "pnpm -r run typecheck",
     "lint": "eslint .",
