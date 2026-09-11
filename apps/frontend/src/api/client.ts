@@ -1,8 +1,10 @@
 import {
   ApiErrorSchema,
+  FridgeResponseSchema,
   RecipeDetailResponseSchema,
   SuggestResponseSchema,
   type RecipeDetail,
+  type FridgeItem,
   type RecipeSummary,
   type SuggestRequestInput,
 } from "@plated/shared";
@@ -82,4 +84,30 @@ export async function suggestRecipes(
 export async function getRecipe(id: string): Promise<RecipeDetail> {
   const raw = await request(`/recipes/${encodeURIComponent(id)}`);
   return RecipeDetailResponseSchema.parse(raw).recipe;
+}
+
+export async function getFridge(): Promise<FridgeItem[]> {
+  return FridgeResponseSchema.parse(await request("/fridge")).items;
+}
+
+export async function addFridgeItem(name: string): Promise<FridgeItem[]> {
+  const raw = await request("/fridge/items", {
+    method: "POST",
+    body: JSON.stringify({ name }),
+  });
+  return FridgeResponseSchema.parse(raw).items;
+}
+
+export async function removeFridgeItem(
+  ingredientId: number,
+): Promise<FridgeItem[]> {
+  const raw = await request(`/fridge/items/${ingredientId}`, {
+    method: "DELETE",
+  });
+  return FridgeResponseSchema.parse(raw).items;
+}
+
+export async function suggestFridgeRecipes(): Promise<RecipeSummary[]> {
+  const raw = await request("/fridge/recipes");
+  return SuggestResponseSchema.parse(raw).recipes;
 }

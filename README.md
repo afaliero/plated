@@ -9,6 +9,10 @@ plated/
 │   ├── backend/
 │   │   └── src/
 │   │       ├── routes/                  HTTP routes + orchestrator
+│   │       ├── services/fridge/
+│   │       │   ├── fridge-service.ts     Inventory operations
+│   │       │   ├── types.ts              Service + repository contracts
+│   │       │   └── storage/              MySQL fridge repository
 │   │       ├── services/recipe/
 │   │       │   ├── recipe-service.ts     Recipe logic + internal conversion
 │   │       │   ├── types.ts              Service contract
@@ -34,6 +38,13 @@ Backend recipe flow:
 route -> orchestrator -> RecipeService -> RecipeClient -> SpoonacularClient
 ```
 
+Fridge inventory flow:
+
+```text
+FridgeScreen -> useFridge -> API client -> fridge routes (development user 1)
+             -> orchestrator -> FridgeService -> FridgeRepository -> MySQL
+```
+
 Frontend navigation:
 
 ```text
@@ -45,8 +56,9 @@ RootNavigator (bottom tabs)
 ```
 
 The tab bar remains visible on recipe details, with a back button returning to
-the recipe list. Fridge inventory is currently local screen state; recipe search
-still uses manually entered ingredients.
+the recipe list. Fridge inventory loads from MySQL, and additions/removals update
+the screen after the API confirms them. Recipes load from the saved fridge and
+refresh when the Recipes tab comes into focus.
 
 ## Setup
 
@@ -123,11 +135,34 @@ Other scripts: `pnpm typecheck` (all workspaces), `pnpm lint`, `pnpm format`.
 
 ## API
 
-| Method | Path               | Notes                                               |
-| ------ | ------------------ | --------------------------------------------------- |
-| `GET`  | `/health`          | Liveness + cache size                               |
-| `POST` | `/recipes/suggest` | Ingredients in, recipe cards out. 1 upstream call.  |
-| `GET`  | `/recipes/:id`     | Full recipe for the detail screen. 1 upstream call. |
+| Method   | Path                          | Notes                                               |
+| -------- | ----------------------------- | --------------------------------------------------- |
+| `GET`    | `/health`                     | Liveness + cache size                               |
+| `POST`   | `/recipes/suggest`            | Ingredients in, recipe cards out. 1 upstream call.  |
+| `GET`    | `/recipes/:id`                | Full recipe for the detail screen. 1 upstream call. |
+| `GET`    | `/fridge`                     | Saved inventory for the development user.           |
+| `POST`   | `/fridge/items`               | Add `{ "name": "rice" }`; return updated inventory. |
+| `DELETE` | `/fridge/items/:ingredientId` | Remove an item; return updated inventory.           |
+| `GET`    | `/fridge/recipes`             | Recipe suggestions based on saved inventory.        |
+
+Fridge responses have the shape `{ "items": [{ "id": 2, "name": "rice" }] }`.
+Names are normalized for case and whitespace. Adding an existing ingredient or
+removing an absent item succeeds without creating duplicates. Custom ingredient
+names are supported, with a maximum of 150 characters.
+
+Until authentication is implemented, all fridge requests use seeded user `1`,
+selected by the backend. This is a local development identity, not authentication;
+clients cannot select a different user. Added inventory survives app reloads but
+is reset by the required reseeding on every backend restart.
+
+Fridge API tests run from `apps/backend` with
+`node --import tsx --test src/routes/fridge.test.ts`. The MySQL integration test
+uses temporary records in a rolled-back transaction without running seeds:
+
+```bash
+cd apps/backend
+RUN_DB_TESTS=1 node --env-file-if-exists=.env --import tsx --test src/services/fridge/storage/fridge-repository.test.ts
+```
 
 ```bash
 curl -X POST http://localhost:3000/recipes/suggest \

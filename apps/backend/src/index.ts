@@ -7,17 +7,21 @@ import { env } from "src/env.js";
 import { AppError } from "src/lib/errors.js";
 import { Orchestrator } from "src/routes/orchestrator.js";
 import { recipesRouter } from "src/routes/recipes.js";
+import { fridgeRouter } from "src/routes/fridge.js";
+import { FridgeService } from "src/services/fridge/fridge-service.js";
+import { FridgeRepository } from "src/services/fridge/storage/fridge-repository.js";
 import { RecipeClient } from "src/services/recipe/client/recipe-client.js";
 import { SpoonacularClient } from "src/services/recipe/client/spoonacular/spoonacular-client.js";
 import { spoonacularConfig } from "src/services/recipe/client/spoonacular/config.js";
 import { RecipeService } from "src/services/recipe/recipe-service.js";
 import { recipeCache } from "src/services/recipe/storage/cache.js";
-import { initializeDatabase } from "src/storage/db/knex.js";
+import db, { initializeDatabase } from "src/storage/db/knex.js";
 
 const spoonacularClient = new SpoonacularClient(spoonacularConfig);
 const recipeClient = new RecipeClient(spoonacularClient);
 const recipeService = new RecipeService(recipeClient, recipeCache);
-const orchestrator = new Orchestrator(recipeService);
+const fridgeService = new FridgeService(new FridgeRepository(db));
+const orchestrator = new Orchestrator(recipeService, fridgeService);
 
 await initializeDatabase();
 
@@ -36,6 +40,7 @@ app.get("/health", (c) =>
 );
 
 app.route("/recipes", recipesRouter(orchestrator));
+app.route("/fridge", fridgeRouter(orchestrator));
 
 app.notFound((c) =>
   c.json<ApiError>(

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -8,10 +8,10 @@ import {
   Text,
   View,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { RecipeSummary } from "@plated/shared";
-import { suggestRecipes } from "src/api/client";
+import { getFridge, suggestFridgeRecipes } from "src/api/client";
 import { Screen } from "src/components/core/Screen";
 import { SearchBar } from "src/components/core/SearchBar";
 import type { RecipesStackNavigation } from "src/navigation/types";
@@ -22,23 +22,34 @@ export function SearchScreen() {
   const navigation = useNavigation<RecipesStackNavigation>();
   const insets = useSafeAreaInsets();
 
-  const [input, setInput] = useState("chicken, rice, broccoli");
+  const [input, setInput] = useState("");
   const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function search() {
+  const search = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      setRecipes(await suggestRecipes({ ingredients: input.split(",") }));
+      const [items, suggestions] = await Promise.all([
+        getFridge(),
+        suggestFridgeRecipes(),
+      ]);
+      setInput(items.map((item) => item.name).join(", "));
+      setRecipes(suggestions);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
       setRecipes([]);
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void search();
+    }, [search]),
+  );
 
   return (
     <Screen style={styles.screen}>
@@ -46,12 +57,17 @@ export function SearchScreen() {
         style={styles.search}
         value={input}
         onChangeText={setInput}
-        placeholder="chicken, rice, broccoli"
+        placeholder="Ingredients in your fridge"
+        editable={false}
       />
 
-      <Pressable style={styles.button} onPress={search} disabled={loading}>
+      <Pressable
+        style={styles.button}
+        onPress={() => void search()}
+        disabled={loading}
+      >
         <Text style={styles.buttonText}>
-          {loading ? "Searching…" : "Find recipes"}
+          {loading ? "Finding recipes…" : "Refresh recipes"}
         </Text>
       </Pressable>
 

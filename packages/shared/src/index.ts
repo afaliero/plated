@@ -3,3 +3,4 @@
 // the ESM-style "./recipe.js" -> "./recipe.ts" rewrite, so keep these bare.
 export * from "./recipe";
 export * from "./api";
+export * from "./fridge";

@@ -22,6 +22,7 @@ type SearchBarProps = Pick<
   value: string;
   onChangeText: (value: string) => void;
   placeholder?: string;
+  editable?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -29,6 +30,7 @@ export function SearchBar({
   value,
   onChangeText,
   placeholder = "Search",
+  editable = true,
   style,
   ...input
 }: SearchBarProps) {
@@ -41,6 +43,7 @@ export function SearchBar({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={color.textPlaceholder}
+        editable={editable}
         autoCapitalize="none"
         autoCorrect={false}
         // iOS only; Android shows nothing, so give it an explicit control if
