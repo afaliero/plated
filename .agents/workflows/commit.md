@@ -1,7 +1,7 @@
 ## Git Workflow
 
 - **Trigger word / command:** When the user types "commit" or explicitly asks to commit changes, treat this as a directive to stage, commit, and push everything. Requests to document or edit this workflow do not themselves trigger a commit.
-- **Safety Pre-Check:** Before execution, inspect the existing staged diff, unstaged changes, and untracked files that `git add .` would include. Verify that no sensitive data (e.g., raw API keys, passwords, `.env` file updates, or hardcoded secrets) would be staged. If secrets are detected, abort the process and warn the user without reproducing the secret values. Do not force-add ignored files.
+- **Safety:** If the secret-scanning hook fails, stop and report the issue. Never bypass the hook. Do not force-add ignored `.env` files.
 - **Action:** If safe, automatically execute the following from the repository root:
 
   ```bash

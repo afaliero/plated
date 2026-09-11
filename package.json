@@ -7,6 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "hooks:install": "sh scripts/install-git-hooks.sh",
     "backend": "docker compose --env-file apps/backend/.env up -d --wait db && pnpm --filter @plated/backend dev",
     "frontend": "pnpm --filter @plated/frontend start",
     "typecheck": "pnpm -r run typecheck",

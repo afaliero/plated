@@ -46,6 +46,20 @@ cp .env.example apps/backend/.env   # then paste your Spoonacular key
 
 Get a key at <https://spoonacular.com/food-api/console#Dashboard>.
 
+Enable the local secret-scanning commit hook once per clone:
+
+```bash
+brew install git-secrets
+pnpm hooks:install
+```
+
+The hook scans staged contents using git-secrets with AWS and project credential
+patterns. It blocks real `.env` files, allows the specific placeholders in
+`.env.example`, and accepts Docker environment-variable references. Findings
+report filenames without printing secret values. A missing scanner or scan
+failure blocks the commit. Never bypass the hook. These pattern checks do not
+guarantee detection of every secret or scan existing commit history.
+
 Install and open Docker Desktop. Set `MYSQL_PASSWORD` and `MYSQL_ROOT_PASSWORD`
 in `apps/backend/.env` to local development passwords. MySQL runs in Docker,
 available to the backend at `127.0.0.1:3307`; its data lives in a named volume.
