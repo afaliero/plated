@@ -26,10 +26,26 @@ export const SuggestRequestSchema = z.object({
     .default("minimize-missing"),
   /** Ignore staples like salt, water, flour when computing what's missing. */
   ignorePantry: z.boolean().default(true),
+  preferences: z.string().trim().max(500).optional(),
 });
 export type SuggestRequest = z.infer<typeof SuggestRequestSchema>;
 /** Pre-parse shape: what a caller may send, with defaults still optional. */
 export type SuggestRequestInput = z.input<typeof SuggestRequestSchema>;
+
+export const FridgeRecipesRequestSchema = z.object({
+  preferences: z.string().trim().max(500).optional(),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(MAX_SUGGEST_LIMIT)
+    .default(DEFAULT_SUGGEST_LIMIT),
+  ranking: z
+    .enum(["maximize-used", "minimize-missing"])
+    .default("minimize-missing"),
+  ignorePantry: z.boolean().default(true),
+});
+export type FridgeRecipesRequest = z.infer<typeof FridgeRecipesRequestSchema>;
 
 export const SuggestResponseSchema = z.object({
   recipes: z.array(RecipeSummarySchema),

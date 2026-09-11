@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { z } from "zod";
 import {
   AddFridgeItemRequestSchema,
+  FridgeRecipesRequestSchema,
   type FridgeResponse,
   type SuggestResponse,
 } from "@plated/shared";
@@ -51,20 +51,11 @@ export function fridgeRouter(orchestrator: Orchestrator): Hono {
     return c.json<FridgeResponse>({ items });
   });
 
-  router.get("/recipes", async (c) => {
-    const parsed = z
-      .object({
-        limit: z.coerce.number().int().min(1).max(20).default(10),
-        ranking: z
-          .enum(["maximize-used", "minimize-missing"])
-          .default("minimize-missing"),
-        ignorePantry: z.coerce.boolean().default(true),
-      })
-      .safeParse({
-        limit: c.req.query("limit"),
-        ranking: c.req.query("ranking"),
-        ignorePantry: c.req.query("ignorePantry"),
-      });
+  router.post("/recipes", async (c) => {
+    const body = await c.req.json().catch(() => {
+      throw badRequest("Request body must be valid JSON.");
+    });
+    const parsed = FridgeRecipesRequestSchema.safeParse(body);
     if (!parsed.success) throw badRequest("Invalid recipe suggestion options.");
     const recipes = await orchestrator.suggestFridgeRecipes(
       DEVELOPMENT_USER_ID,

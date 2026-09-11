@@ -23,12 +23,16 @@ export class RecipeService implements RecipeServiceContract {
     private readonly cache: TtlCache,
   ) {}
 
-  async suggest(request: Parameters<RecipeServiceContract["suggest"]>[0]) {
+  async suggest(
+    request: Parameters<RecipeServiceContract["suggest"]>[0],
+    options: { cache?: boolean } = {},
+  ) {
     const startedAt = Date.now();
     const key = cacheKey(request.ingredients);
-    const { value, status } = await this.cache.getOrSet(key, () =>
-      this.client.suggest(request),
-    );
+    const { value, status } =
+      options.cache === false
+        ? { value: await this.client.suggest(request), status: "miss" as const }
+        : await this.cache.getOrSet(key, () => this.client.suggest(request));
     logCacheAccess("suggest", status, key, startedAt);
 
     return value.map((recipe) => ({

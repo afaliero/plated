@@ -107,7 +107,14 @@ export async function removeFridgeItem(
   return FridgeResponseSchema.parse(raw).items;
 }
 
-export async function suggestFridgeRecipes(): Promise<RecipeSummary[]> {
-  const raw = await request("/fridge/recipes");
+export async function suggestFridgeRecipes(
+  preferences?: string,
+): Promise<RecipeSummary[]> {
+  const raw = await request("/fridge/recipes", {
+    method: "POST",
+    body: JSON.stringify(
+      preferences?.trim() ? { preferences: preferences.trim() } : {},
+    ),
+  });
   return SuggestResponseSchema.parse(raw).recipes;
 }

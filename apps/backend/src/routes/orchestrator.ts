@@ -1,5 +1,6 @@
 import type { AddFridgeItemRequest, SuggestRequest } from "@plated/shared";
 import type { FridgeServiceContract } from "src/services/fridge/types.js";
+import type { PreferenceRankerContract } from "src/services/recipe/preference-ranker.js";
 import { badRequest } from "src/lib/errors.js";
 import type { RecipeServiceContract } from "src/services/recipe/types.js";
 import { normalizeIngredients } from "src/routes/util.js";
@@ -9,6 +10,7 @@ export class Orchestrator {
   constructor(
     private readonly recipes: RecipeServiceContract,
     private readonly fridge: FridgeServiceContract,
+    private readonly ranker?: PreferenceRankerContract,
   ) {}
 
   getFridge(userId: number) {
@@ -26,10 +28,27 @@ export class Orchestrator {
   async suggestFridgeRecipes(userId: number, request: SuggestRequest) {
     const items = await this.fridge.list(userId);
     if (items.length === 0) return [];
-    return this.suggestRecipes({
-      ...request,
-      ingredients: items.map((item) => item.name),
-    });
+    const candidates = await this.recipes.suggest(
+      {
+        ...request,
+        ingredients: items.map((item) => item.name),
+      },
+      { cache: !request.preferences },
+    );
+    if (!request.preferences) return candidates;
+    if (!this.ranker) throw new Error("Preference ranking is not configured.");
+    let rankedIds: string[];
+    try {
+      rankedIds = await this.ranker.rank(candidates, request.preferences);
+    } catch (error) {
+      console.error(
+        "Preference ranking failed; returning unranked recipes.",
+        error,
+      );
+      return candidates;
+    }
+    const byId = new Map(candidates.map((recipe) => [recipe.id, recipe]));
+    return rankedIds.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : []));
   }
 
   async suggestRecipes(request: SuggestRequest) {

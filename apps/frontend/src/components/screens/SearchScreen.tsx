@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,7 +11,7 @@ import {
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { RecipeSummary } from "@plated/shared";
-import { getFridge, suggestFridgeRecipes } from "src/api/client";
+import { suggestFridgeRecipes } from "src/api/client";
 import { Screen } from "src/components/core/Screen";
 import { SearchBar } from "src/components/core/SearchBar";
 import type { RecipesStackNavigation } from "src/navigation/types";
@@ -22,7 +22,8 @@ export function SearchScreen() {
   const navigation = useNavigation<RecipesStackNavigation>();
   const insets = useSafeAreaInsets();
 
-  const [input, setInput] = useState("");
+  const [preferences, setPreferences] = useState("");
+  const preferencesRef = useRef(preferences);
   const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,12 +32,7 @@ export function SearchScreen() {
     setLoading(true);
     setError(null);
     try {
-      const [items, suggestions] = await Promise.all([
-        getFridge(),
-        suggestFridgeRecipes(),
-      ]);
-      setInput(items.map((item) => item.name).join(", "));
-      setRecipes(suggestions);
+      setRecipes(await suggestFridgeRecipes(preferencesRef.current));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
       setRecipes([]);
@@ -55,10 +51,12 @@ export function SearchScreen() {
     <Screen style={styles.screen}>
       <SearchBar
         style={styles.search}
-        value={input}
-        onChangeText={setInput}
-        placeholder="Ingredients in your fridge"
-        editable={false}
+        value={preferences}
+        onChangeText={(value) => {
+          preferencesRef.current = value;
+          setPreferences(value);
+        }}
+        placeholder="Craving anything specific?"
       />
 
       <Pressable

@@ -38,6 +38,15 @@ Backend recipe flow:
 route -> orchestrator -> RecipeService -> RecipeClient -> SpoonacularClient
 ```
 
+Personalized recipe flow:
+
+```text
+POST /fridge/recipes
+  -> Orchestrator -> RecipeService (uncached when preferences are present)
+  -> PreferenceRanker (gpt-5.6-luna only)
+  -> validated candidate IDs -> trusted recipe cards
+```
+
 Fridge inventory flow:
 
 ```text
@@ -135,17 +144,21 @@ Other scripts: `pnpm typecheck` (all workspaces), `pnpm lint`, `pnpm format`.
 
 ## API
 
-| Method   | Path                          | Notes                                               |
-| -------- | ----------------------------- | --------------------------------------------------- |
-| `GET`    | `/health`                     | Liveness + cache size                               |
-| `POST`   | `/recipes/suggest`            | Ingredients in, recipe cards out. 1 upstream call.  |
-| `GET`    | `/recipes/:id`                | Full recipe for the detail screen. 1 upstream call. |
-| `GET`    | `/fridge`                     | Saved inventory for the development user.           |
-| `POST`   | `/fridge/items`               | Add `{ "name": "rice" }`; return updated inventory. |
-| `DELETE` | `/fridge/items/:ingredientId` | Remove an item; return updated inventory.           |
-| `GET`    | `/fridge/recipes`             | Recipe suggestions based on saved inventory.        |
+| Method   | Path                          | Notes                                                                  |
+| -------- | ----------------------------- | ---------------------------------------------------------------------- |
+| `GET`    | `/health`                     | Liveness + cache size                                                  |
+| `POST`   | `/recipes/suggest`            | Ingredients in, recipe cards out. 1 upstream call.                     |
+| `GET`    | `/recipes/:id`                | Full recipe for the detail screen. 1 upstream call.                    |
+| `GET`    | `/fridge`                     | Saved inventory for the development user.                              |
+| `POST`   | `/fridge/items`               | Add `{ "name": "rice" }`; return updated inventory.                    |
+| `DELETE` | `/fridge/items/:ingredientId` | Remove an item; return updated inventory.                              |
+| `POST`   | `/fridge/recipes`             | Recipe suggestions; optional `{ "preferences": "salty and citrusy" }`. |
 
 Fridge responses have the shape `{ "items": [{ "id": 2, "name": "rice" }] }`.
+When preferences are included in `POST /fridge/recipes`, the backend makes one
+uncached Spoonacular call followed by one `gpt-5.6-luna` ranking call. The model
+can select only IDs from the Spoonacular candidate set. If ranking fails, the
+backend returns the unranked candidates and does not try another model.
 Names are normalized for case and whitespace. Adding an existing ingredient or
 removing an absent item succeeds without creating duplicates. Custom ingredient
 names are supported, with a maximum of 150 characters.
