@@ -56,7 +56,7 @@ export function SearchScreen() {
           preferencesRef.current = value;
           setPreferences(value);
         }}
-        placeholder="Craving anything specific?"
+        placeholder="Any preferences?"
       />
 
       <Pressable

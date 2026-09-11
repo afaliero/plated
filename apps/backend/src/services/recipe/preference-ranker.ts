@@ -33,15 +33,15 @@ export class PreferenceRanker implements PreferenceRankerContract {
     });
     const parsed = PreferenceRankingSchema.parse(raw);
     const candidateIds = new Set(candidates.map((recipe) => recipe.id));
-    const ranked = parsed.rankedRecipeIds.filter((id) => candidateIds.has(id));
+    const ranked = new Set(
+      parsed.rankedRecipeIds.filter((id) => candidateIds.has(id)),
+    );
     const excluded = new Set(
       parsed.excludedRecipeIds.filter((id) => candidateIds.has(id)),
     );
     return [
       ...ranked,
-      ...candidates
-        .map((recipe) => recipe.id)
-        .filter((id) => !excluded.has(id) && !ranked.includes(id)),
+      ...[...candidateIds].filter((id) => !excluded.has(id) && !ranked.has(id)),
     ];
   }
 }
